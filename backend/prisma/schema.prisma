@@ -1,0 +1,225 @@
+// Prisma Schema for Mini ERP + Client Portal
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ==================== ENUMS ====================
+
+enum Role {
+  ADMIN
+  SUPERVISOR
+  OPERATOR
+  CLIENT
+}
+
+enum LeadStatus {
+  NEW
+  CONTACTED
+  QUALIFIED
+  CONVERTED
+  LOST
+}
+
+enum ClaimStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum ClaimPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+// ==================== MODELS ====================
+
+model User {
+  id            String    @id @default(uuid())
+  email         String    @unique
+  password      String
+  firstName     String
+  lastName      String
+  phone         String?
+  role          Role      @default(OPERATOR)
+  isActive      Boolean   @default(true)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  // Relations
+  createdLeads   Lead[]    @relation("CreatedByUser")
+  assignedLeads  Lead[]    @relation("AssignedToUser")
+  client         Client?   @relation("ClientUser")
+  createdClaims  Claim[]   @relation("ClaimCreatedBy")
+  assignedClaims Claim[]   @relation("ClaimAssignedTo")
+  activities     Activity[]
+
+  @@map("users")
+}
+
+model Lead {
+  id             String      @id @default(uuid())
+  firstName      String
+  lastName       String
+  email          String
+  phone          String?
+  company        String?
+  source         String?
+  status         LeadStatus  @default(NEW)
+  notes          String?
+  estimatedValue Decimal?    @db.Decimal(12, 2)
+
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
+  convertedAt    DateTime?
+
+  // Relations
+  createdById     String
+  createdBy       User        @relation("CreatedByUser", fields: [createdById], references: [id])
+  assignedToId    String?
+  assignedTo      User?       @relation("AssignedToUser", fields: [assignedToId], references: [id])
+  convertedClient Client?     @relation("ConvertedFromLead")
+  activities      Activity[]
+
+  @@map("leads")
+}
+
+model Client {
+  id          String    @id @default(uuid())
+  firstName   String
+  lastName    String
+  email       String    @unique
+  phone       String?
+  company     String?
+  address     String?
+  city        String?
+  state       String?
+  zipCode     String?
+  country     String?
+  taxId       String?
+
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  userId          String?   @unique
+  user            User?     @relation("ClientUser", fields: [userId], references: [id])
+  convertedFromId String?   @unique
+  convertedFrom   Lead?     @relation("ConvertedFromLead", fields: [convertedFromId], references: [id])
+  subscriptions   ClientProduct[]
+  claims          Claim[]
+  activities      Activity[]
+
+  @@map("clients")
+}
+
+model Product {
+  id           String    @id @default(uuid())
+  name         String
+  description  String?
+  price        Decimal   @db.Decimal(12, 2)
+  billingCycle String    @default("monthly")
+  isActive     Boolean   @default(true)
+
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  clientProducts ClientProduct[]
+
+  @@map("products")
+}
+
+model ClientProduct {
+  id          String    @id @default(uuid())
+  quantity    Int       @default(1)
+  customPrice Decimal?  @db.Decimal(12, 2)
+  startDate   DateTime  @default(now())
+  endDate     DateTime?
+  isActive    Boolean   @default(true)
+
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  // Relations
+  clientId    String
+  client      Client    @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  productId   String
+  product     Product   @relation(fields: [productId], references: [id])
+
+  @@unique([clientId, productId])
+  @@map("client_products")
+}
+
+model Claim {
+  id          String        @id @default(uuid())
+  title       String
+  description String
+  status      ClaimStatus   @default(OPEN)
+  priority    ClaimPriority @default(MEDIUM)
+  resolution  String?
+
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  resolvedAt  DateTime?
+
+  // Relations
+  clientId     String
+  client       Client        @relation(fields: [clientId], references: [id])
+  createdById  String
+  createdBy    User          @relation("ClaimCreatedBy", fields: [createdById], references: [id])
+  assignedToId String?
+  assignedTo   User?         @relation("ClaimAssignedTo", fields: [assignedToId], references: [id])
+  attachments  ClaimAttachment[]
+  activities   Activity[]
+
+  @@map("claims")
+}
+
+model ClaimAttachment {
+  id           String    @id @default(uuid())
+  filename     String
+  originalName String
+  mimeType     String
+  size         Int
+  path         String
+
+  createdAt    DateTime  @default(now())
+
+  // Relations
+  claimId      String
+  claim        Claim     @relation(fields: [claimId], references: [id], onDelete: Cascade)
+
+  @@map("claim_attachments")
+}
+
+model Activity {
+  id          String    @id @default(uuid())
+  action      String
+  description String
+  metadata    Json?
+
+  createdAt   DateTime  @default(now())
+
+  // Relations
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  leadId      String?
+  lead        Lead?     @relation(fields: [leadId], references: [id], onDelete: Cascade)
+  clientId    String?
+  client      Client?   @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  claimId     String?
+  claim       Claim?    @relation(fields: [claimId], references: [id], onDelete: Cascade)
+
+  @@map("activities")
+}
+

@@ -1,0 +1,137 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Import fonts */
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap');
+@import url('https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@400,500,700&display=swap');
+
+:root {
+  --font-outfit: 'Outfit', system-ui, sans-serif;
+  --font-cabinet: 'Cabinet Grotesk', system-ui, sans-serif;
+}
+
+/* Base styles */
+html {
+  font-family: var(--font-outfit);
+}
+
+body {
+  @apply bg-slate-950 text-slate-100 antialiased;
+  background-image: 
+    radial-gradient(ellipse 80% 80% at 50% -20%, rgba(36, 173, 180, 0.1), transparent),
+    linear-gradient(to bottom, rgba(12, 18, 34, 1), rgba(15, 23, 42, 1));
+  min-height: 100vh;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-800/50;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-600 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-500;
+}
+
+/* Selection */
+::selection {
+  @apply bg-primary-500/30 text-primary-100;
+}
+
+/* Focus visible */
+:focus-visible {
+  @apply outline-none ring-2 ring-primary-500/50 ring-offset-2 ring-offset-slate-900;
+}
+
+/* Animations */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.animate-shimmer {
+  animation: shimmer 2s infinite linear;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.05) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 200% 100%;
+}
+
+/* Grid pattern background */
+.bg-grid {
+  background-image: 
+    linear-gradient(rgba(36, 173, 180, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(36, 173, 180, 0.03) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Glass effect */
+.glass {
+  @apply bg-slate-800/30 backdrop-blur-xl border border-slate-700/50;
+}
+
+/* Glow effect */
+.glow {
+  box-shadow: 0 0 20px rgba(36, 173, 180, 0.15);
+}
+
+.glow-accent {
+  box-shadow: 0 0 20px rgba(245, 158, 11, 0.15);
+}
+
+/* Card hover effect */
+.card-hover {
+  @apply transition-all duration-300;
+}
+
+.card-hover:hover {
+  @apply -translate-y-1 shadow-xl shadow-black/20;
+}
+
+/* Status indicator pulse */
+.status-pulse {
+  @apply relative;
+}
+
+.status-pulse::after {
+  content: '';
+  @apply absolute inset-0 rounded-full animate-ping opacity-75;
+  background: inherit;
+}
+
+/* Table row hover */
+.table-row-hover {
+  @apply transition-colors hover:bg-slate-800/50;
+}
+
+/* Button press effect */
+.btn-press:active {
+  @apply scale-95;
+}
+
+/* Gradient text */
+.gradient-text {
+  @apply bg-gradient-to-r from-primary-400 to-primary-600 bg-clip-text text-transparent;
+}
+
+/* Toast customization */
+.toast-custom {
+  @apply bg-slate-800 border border-slate-700 text-slate-100 shadow-xl;
+}
+
