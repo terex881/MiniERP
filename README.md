@@ -92,23 +92,16 @@ A full-stack enterprise resource planning (ERP) system with an integrated client
 1. **Backend Environment Variables**
 
    Create a `.env` file in the `backend/` directory:
-   ``` echo 'DATABASE_URL="postgresql://neondb_owner:npg_n8RMGx1tvZrd@ep-long-silence-absko2q2-pooler.eu-west-2.aws.neon.  tech/neondb?sslmode=require"
-   JWT_SECRET="super-secret-jwt-key-for-mini-erp-2024"
-   JWT_REFRESH_SECRET="super-secret-refresh-key-for-mini-erp-2024"
-   JWT_EXPIRES_IN="15m"
-   JWT_REFRESH_EXPIRES_IN="7d"
-   PORT=3001
-   NODE_ENV="development"
-   CORS_ORIGIN="http://localhost:3000"
-   UPLOAD_MAX_SIZE=5242880
-   UPLOAD_PATH="./uploads"' > backend/.env
-   ```
-
-2. **Frontend Environment Variables**
-
-   Create a `.env.local` file in the `frontend/` directory:
-   ```env
-   NEXT_PUBLIC_API_URL=http://localhost:3001
+   ``` echo 'DATABASE_URL="postgresql://neondb_owner:npg_n8RMGx1tvZrd@ep-long-silence-absko2q2-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require"
+JWT_SECRET="super-secret-jwt-key-for-mini-erp-2024"
+JWT_REFRESH_SECRET="super-secret-refresh-key-for-mini-erp-2024"
+JWT_EXPIRES_IN="15m"
+JWT_REFRESH_EXPIRES_IN="7d"
+PORT=3001
+NODE_ENV="development"
+CORS_ORIGIN="http://localhost:3000"
+UPLOAD_MAX_SIZE=5242880
+UPLOAD_PATH="./uploads"' > backend/.env
    ```
 
 ### Database Setup
