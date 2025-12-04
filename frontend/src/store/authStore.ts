@@ -9,14 +9,14 @@ interface AuthState {
   accessToken: string | null;
   refreshToken: string | null;
   isAuthenticated: boolean;
-  isLoading: boolean;
+  _hasHydrated: boolean;
 
   // Actions
   setUser: (user: AuthUser) => void;
   setTokens: (accessToken: string, refreshToken: string) => void;
   login: (user: AuthUser, accessToken: string, refreshToken: string) => void;
   logout: () => void;
-  setLoading: (loading: boolean) => void;
+  setHasHydrated: (hasHydrated: boolean) => void;
 
   // Helpers
   hasRole: (roles: Role[]) => boolean;
@@ -34,7 +34,7 @@ export const useAuthStore = create<AuthState>()(
       accessToken: null,
       refreshToken: null,
       isAuthenticated: false,
-      isLoading: true,
+      _hasHydrated: false,
 
       setUser: (user) => set({ user }),
 
@@ -47,7 +47,6 @@ export const useAuthStore = create<AuthState>()(
           accessToken,
           refreshToken,
           isAuthenticated: true,
-          isLoading: false,
         }),
 
       logout: () =>
@@ -56,10 +55,9 @@ export const useAuthStore = create<AuthState>()(
           accessToken: null,
           refreshToken: null,
           isAuthenticated: false,
-          isLoading: false,
         }),
 
-      setLoading: (isLoading) => set({ isLoading }),
+      setHasHydrated: (hasHydrated) => set({ _hasHydrated: hasHydrated }),
 
       hasRole: (roles) => {
         const user = get().user;
@@ -84,6 +82,12 @@ export const useAuthStore = create<AuthState>()(
         refreshToken: state.refreshToken,
         isAuthenticated: state.isAuthenticated,
       }),
+      onRehydrateStorage: () => (state) => {
+        // Set hydration flag after rehydration is complete
+        if (state) {
+          state.setHasHydrated(true);
+        }
+      },
     }
   )
 );

@@ -7,10 +7,18 @@ import { FullPageLoader } from '@/components/ui/Spinner';
 
 export default function HomePage() {
   const router = useRouter();
-  const { isAuthenticated, user, isLoading } = useAuthStore();
+  const { isAuthenticated, user, _hasHydrated, setHasHydrated } = useAuthStore();
+
+  // Set hydration flag on mount if not already set
+  useEffect(() => {
+    if (!_hasHydrated) {
+      setHasHydrated(true);
+    }
+  }, [_hasHydrated, setHasHydrated]);
 
   useEffect(() => {
-    if (!isLoading) {
+    // Only redirect after hydration is complete
+    if (_hasHydrated) {
       if (isAuthenticated && user) {
         // Redirect based on role
         if (user.role === 'CLIENT') {
@@ -22,7 +30,7 @@ export default function HomePage() {
         router.push('/login');
       }
     }
-  }, [isAuthenticated, user, isLoading, router]);
+  }, [isAuthenticated, user, _hasHydrated, router]);
 
   return <FullPageLoader />;
 }

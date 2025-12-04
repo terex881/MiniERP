@@ -10,26 +10,27 @@ import { cn } from '@/lib/utils';
 
 export default function PortalLayout({ children }: { children: React.ReactNode }) {
   const router = useRouter();
-  const { isAuthenticated, user, isLoading, setLoading } = useAuthStore();
+  const { isAuthenticated, user, _hasHydrated, setHasHydrated } = useAuthStore();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [mounted, setMounted] = useState(false);
+
+  // Set hydration flag on mount if not already set
+  useEffect(() => {
+    if (!_hasHydrated) {
+      setHasHydrated(true);
+    }
+  }, [_hasHydrated, setHasHydrated]);
 
   useEffect(() => {
-    setMounted(true);
-    setLoading(false);
-  }, [setLoading]);
-
-  useEffect(() => {
-    if (mounted && !isLoading) {
+    if (_hasHydrated) {
       if (!isAuthenticated) {
         router.push('/login');
       } else if (user?.role !== 'CLIENT') {
         router.push('/dashboard');
       }
     }
-  }, [mounted, isAuthenticated, user, isLoading, router]);
+  }, [_hasHydrated, isAuthenticated, user, router]);
 
-  if (!mounted || isLoading) return <FullPageLoader />;
+  if (!_hasHydrated) return <FullPageLoader />;
   if (!isAuthenticated || user?.role !== 'CLIENT') return <FullPageLoader />;
 
   return (

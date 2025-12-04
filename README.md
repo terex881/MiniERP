@@ -66,13 +66,40 @@ A full-stack enterprise resource planning (ERP) system with an integrated client
 - Node.js (v18 or higher)
 - PostgreSQL database
 - npm or yarn
+- Make (optional, but recommended for easier setup)
 
-### Installation
+### Quick Start (Using Makefile)
+
+The easiest way to get started is using the provided Makefile:
 
 1. **Clone the repository**
    ```bash
-   git clone git@github.com:terex881/Mini_ERP.git
-   cd Mini_ERP
+   git clone git@github.com:terex881/MiniERP.git
+   cd MiniERP
+   ```
+
+2. **Run everything with one command**
+   ```bash
+   make run
+   ```
+   
+   This will:
+   - Install all dependencies (frontend and backend)
+   - Create the backend `.env` file with default configuration
+   - Start both frontend and backend servers concurrently
+   
+   The application will be available at:
+   - Frontend: `http://localhost:3000`
+   - Backend API: `http://localhost:3001`
+
+### Manual Installation
+
+If you prefer to set up manually:
+
+1. **Clone the repository**
+   ```bash
+   git clone git@github.com:terex881/MiniERP.git
+   cd MiniERP
    ```
 
 2. **Install backend dependencies**
@@ -91,17 +118,27 @@ A full-stack enterprise resource planning (ERP) system with an integrated client
 
 1. **Backend Environment Variables**
 
+   The Makefile can automatically create the `.env` file for you (see Quick Start section below), or you can create it manually:
+   
    Create a `.env` file in the `backend/` directory:
-   ``` echo 'DATABASE_URL="postgresql://neondb_owner:npg_n8RMGx1tvZrd@ep-long-silence-absko2q2-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require"
-JWT_SECRET="super-secret-jwt-key-for-mini-erp-2024"
-JWT_REFRESH_SECRET="super-secret-refresh-key-for-mini-erp-2024"
-JWT_EXPIRES_IN="15m"
-JWT_REFRESH_EXPIRES_IN="7d"
-PORT=3001
-NODE_ENV="development"
-CORS_ORIGIN="http://localhost:3000"
-UPLOAD_MAX_SIZE=5242880
-UPLOAD_PATH="./uploads"' > backend/.env
+   ```env
+   DATABASE_URL="postgresql://neondb_owner:npg_n8RMGx1tvZrd@ep-long-silence-absko2q2-pooler.eu-west-2.aws.neon.tech/neondb?sslmode=require"
+   JWT_SECRET="super-secret-jwt-key-for-mini-erp-2024"
+   JWT_REFRESH_SECRET="super-secret-refresh-key-for-mini-erp-2024"
+   JWT_EXPIRES_IN="15m"
+   JWT_REFRESH_EXPIRES_IN="7d"
+   PORT=3001
+   NODE_ENV="development"
+   CORS_ORIGIN="http://localhost:3000"
+   UPLOAD_MAX_SIZE=5242880
+   UPLOAD_PATH="./uploads"
+   ```
+
+2. **Frontend Environment Variables**
+
+   Create a `.env.local` file in the `frontend/` directory:
+   ```env
+   NEXT_PUBLIC_API_URL=http://localhost:3001
    ```
 
 ### Database Setup
@@ -124,6 +161,31 @@ UPLOAD_PATH="./uploads"' > backend/.env
 
 ### Running the Application
 
+#### Using Makefile (Recommended)
+
+**Run both services together:**
+```bash
+make run
+```
+
+**Run services individually:**
+```bash
+make frontend    # Start only frontend
+make backend     # Start only backend
+```
+
+**Other useful Makefile commands:**
+```bash
+make install          # Install all dependencies
+make install-frontend # Install frontend dependencies only
+make install-backend  # Install backend dependencies only
+make setup-env        # Create backend .env file
+make stop             # Stop all running services
+make clean            # Remove node_modules, .env, and build artifacts
+```
+
+#### Manual Running
+
 1. **Start the backend server**
    ```bash
    cd backend
@@ -138,9 +200,21 @@ UPLOAD_PATH="./uploads"' > backend/.env
    ```
    The application will be available at `http://localhost:3000`
 
-## 📝 Available Scripts
+## 📝 Available Commands
 
-### Backend
+### Makefile Commands
+
+- `make run` - Install dependencies, setup environment, and start both services
+- `make install` - Install all dependencies (frontend and backend)
+- `make install-frontend` - Install frontend dependencies only
+- `make install-backend` - Install backend dependencies only
+- `make setup-env` - Create backend `.env` file with default configuration
+- `make frontend` - Start only the frontend development server
+- `make backend` - Start only the backend development server
+- `make stop` - Stop all running services and clear ports
+- `make clean` - Remove node_modules, .env file, and build artifacts
+
+### Backend Scripts
 
 - `npm run dev` - Start development server with hot reload
 - `npm run build` - Build for production
@@ -151,7 +225,7 @@ UPLOAD_PATH="./uploads"' > backend/.env
 - `npm run prisma:studio` - Open Prisma Studio
 - `npm run seed` - Seed the database
 
-### Frontend
+### Frontend Scripts
 
 - `npm run dev` - Start development server
 - `npm run build` - Build for production
